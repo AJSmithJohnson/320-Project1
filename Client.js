@@ -45,11 +45,11 @@ exports.Client = class Client {
 
 				//calls servers generate responseID needs desiredUsername and a reference to the client
 				let responseType = this.server.generateResponseID(desiredUsername, this);
-				console.log(responseType + "This is the responseType");
+				//console.log(responseType + "This is the responseType");
 				this.buffer = this.buffer.slice(5 + lengthOfUsername);
 
 				const packet = PacketBuilder.join(responseType);
-				console.log(packet);
+				//console.log(packet);
 				this.sendPacket(packet);
 				//const packet2 = PacketBuilder.update(this.server.game);
 				console.log("User wants to change name: " +desiredUsername+"");

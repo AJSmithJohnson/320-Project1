@@ -203,7 +203,7 @@ public class GameClient : MonoBehaviour
                 UpdateButtens(xVal, yVal, type);
                 buffer.Consume(9);
                 break;
-            case "SCORE":
+            case "SCOR":
                 int xValue = buffer.ReadUInt8(6);
                 int yValue= buffer.ReadUInt8(7);
                 int typeVal = buffer.ReadUInt8(8);

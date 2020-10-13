@@ -19,6 +19,7 @@ public class GameplayController : MonoBehaviour
 
     public void SendPacket()
     {
+       // print(xPos + "         " + yPos);
         GameClient.singleton.SendPlayPacket(xPos, yPos,  type);
     }
 

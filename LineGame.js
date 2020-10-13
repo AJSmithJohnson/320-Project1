@@ -6,6 +6,10 @@ const Game = {
 	whoHasWon: 0,
 	moves: 0,
 	checks: 0,
+	scoreSpotA: 0,
+	scoreSpotB: 0,
+	scoreSpotC: 0,
+	scoreSpotD: 0,
 	board: [
 		[5, 0, 5, 0, 5],
 		[0, 3, 0, 3, 0],//spaces of importance y = 1, x = 1, and y = 3 x = 1
@@ -17,39 +21,48 @@ const Game = {
 	clientA:null,
 	clientB:null,
 	PlayMove(client, x, y, type){
-		console.log(this.board[1][1]);
+		console.log(x);
+		console.log("");
+		console.log(y);
+		/*console.log(this.board[1][1]);
 		console.log(this.board[3][1]);
 		console.log(this.board[1][3]);
-		console.log(this.board[3][3]);
+		console.log(this.board[3][3]);*/
 		if(type == 5 || type == 3){
 			//TODO: send a packet that notifies the client that they need to 
 			//actually select a horizontal or vertical line space
-			this.moves += 1;
+			//this.moves += 1;
 		}
 		else if(type < 3 && type >0)
 		{
-			this.moves += 1;
+			//this.moves += 1;
 			this.board[y][x] = type;
 			console.log(this.board);
-			if(this.checkFor1stSpotScore() == 1){
-				const packet = PacketBuilder.scoreAndUpdate(this, y, x, type, 1, 1);
-				Server.broadcastPacket(packet);
-			}else if(this.checkForSecondSpotScore() == 1)
-			{
-				const packet = PacketBuilder.scoreAndUpdate(this, y, x, type, 3, 1);
+			if(this.scoreSpotA == 0 && this.checkFor1stSpotScore() == 1){
+				this.scoreSpotA = 1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 1);
 				Server.broadcastPacket(packet);
 			}
-			else if(this.checkForThirdSpotScore() == 1)
+			if(this.scoreSpotB == 0 && this.checkForSecondSpotScore() == 1)
 			{
-				const packet = PacketBuilder.scoreAndUpdate(this, y, x, type, 1, 3);
+				this.scoreSpotB = 1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 1);
 				Server.broadcastPacket(packet);
-			}else if(this.checkForFourthSpotScore() == 1){
-				const packet = PacketBuilder.scoreAndUpdate(this, y, x, type, 3, 3);
-				Server.broadcastPacket(packet);
-			}else {
-				//update the board
-				this.checkStateAndUpdate(x,y, type);
 			}
+			if(this.scoreSpotC == 0 && this.checkForThirdSpotScore() == 1)
+			{
+				this.scoreSpotC = 1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 3);
+				Server.broadcastPacket(packet);
+			}
+			if(this.scoreSpotD == 0 && this.checkForFourthSpotScore() == 1){
+				this.scoreSpotD = 1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 3);
+				Server.broadcastPacket(packet);
+			} 
+			//update the board
+			this.checkStateAndUpdate(x,y, type);
+			
 			
 		}else{
 			//TODO: Send an error message
@@ -63,21 +76,23 @@ const Game = {
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[0][1] == 1){
+		if(this.board[0][1] != 0){
 			this.checks+=1;
 		}
-		if(this.board[2][1] == 1){
+		if(this.board[2][1] != 0){
 			this.checks+=1;
 		}
-		if(this.board[1][0] == 2){
+		if(this.board[1][0] != 0){
 			this.checks+=1;
 		}
-		if(this.board[1][2] == 2)
+		if(this.board[1][2] != 0)
 		{
 			this.checks+=1;
 		}
+
 		if(this.checks == 4)
 		{
+			//console.log("FIRST SPOT SUCCESSFULL");
 			return 1;
 		}
 		else
@@ -92,24 +107,25 @@ const Game = {
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[2][1] == 1){
+		if(this.board[1][2] != 0){
 			this.checks+=1;
 		}
-		if(this.board[4][1] == 1){
+		if(this.board[1][4] != 0){
 			this.checks+=1;
 		}
-		if(this.board[3][0] == 2){
+		if(this.board[0][3] != 0){
 			this.checks+=1;
 		}
-		if(this.board[3][2] == 2)
+		if(this.board[2][3] != 0)
 		{
 			this.checks+=1;
 		}
 
-		console.log("CHecks equals " + this.checks);
-
+		//console.log("CHecks equals " + this.checks);
+		
 		if(this.checks == 4)
 		{
+			//console.log("SECOND SPOT SUCCESSFULL");
 			return 1;
 		}
 		else
@@ -123,23 +139,24 @@ const Game = {
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[2][3] == 1){
+		if(this.board[3][0] != 0){
 			this.checks+=1;
 		}
-		if(this.board[4][3] == 1){
+		if(this.board[3][2] != 0){
 			this.checks+=1;
 		}
-		if(this.board[3][2] == 2){
+		if(this.board[2][1] != 0){
 			this.checks+=1;
 		}
-		if(this.board[3][4] == 2)
+		if(this.board[4][1] != 0)
 		{
 			this.checks+=1;
 		}
-
-		console.log("CHecks equals " + this.checks);
+		
+		//console.log("CHecks equals " + this.checks);
 		if(this.checks == 4)
 		{
+			//console.log("THIRD SPOT SUCCESSFULL");
 			return 1;
 		}
 		else
@@ -153,23 +170,24 @@ const Game = {
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[2][3] == 1){
+		if(this.board[3][2] != 0){
 			this.checks+=1;
 		}
-		if(this.board[4][3] == 1){
+		if(this.board[3][4] != 0){
 			this.checks+=1;
 		}
-		if(this.board[3][2] == 2){
+		if(this.board[2][3] != 0){
 			this.checks+=1;
 		}
-		if(this.board[3][4] == 2)
+		if(this.board[4][3] != 0)
 		{
 			this.checks+=1;
 		}
-
-		console.log("CHecks equals " + this.checks);
+		
+		//console.log("CHecks equals " + this.checks);
 		if(this.checks == 4)
 		{
+			//console.log("FOURTH SPOT SUCCESSFULL");
 			return 1;
 		}
 		else
