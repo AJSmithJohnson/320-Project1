@@ -9,7 +9,7 @@ public class GameplayController : MonoBehaviour
     public int xPos = 0;
     public int yPos = 0;
     public int type = 0;
-    //0 is for a dot space
+    //5 is for a dot space
     //1 is for horizontal line
     //2 is for vertical line
     //3 is for an empty winnable space
@@ -18,7 +18,7 @@ public class GameplayController : MonoBehaviour
 
     public void SendPacket()
     {
-       // GameClient.singleton.SendPlayPacket(xPos, yPos,  type);
+        GameClient.singleton.SendPlayPacket(xPos, yPos,  type);
     }
 
 

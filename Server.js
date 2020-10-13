@@ -84,6 +84,7 @@ exports.Server = {
 					return 2;//you are already client O
 				}
         		if(!this.game.clientA) {
+        			console.log("NO client A");
 					this.game.clientA = client;
 					return 1;//you are new clientX
 

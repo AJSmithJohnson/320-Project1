@@ -17,7 +17,7 @@ public class GameClient : MonoBehaviour
 
     public Transform panelHostDetails;
     public Transform panelUsername;
-    public GameplayController panelGameplay;
+    public Transform panelGameplay;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,7 +45,7 @@ public class GameClient : MonoBehaviour
     {
         string user = inputUsername.text;
         Buffer packet = PacketBuilder.Join(user);
-        
+        SendPacketToServer(packet);
     }
 
     async public void TryToConnect(string host, ushort port)
@@ -55,6 +55,8 @@ public class GameClient : MonoBehaviour
         {
             await socket.ConnectAsync(host, port);
             AdjustPanels(2);
+
+            StartReceivingPackets();
         }
         catch(Exception e)
         {
@@ -86,6 +88,28 @@ public class GameClient : MonoBehaviour
         }
     }
 
+    async private void StartReceivingPackets()
+    {
+        int maxPacketSize = 4096;
+
+        while(socket.Connected)
+        {
+            byte[] data = new byte[maxPacketSize];
+
+            try
+            {
+                int bytesRead = await socket.GetStream().ReadAsync(data, 0, maxPacketSize);
+                buffer.Concat(data, bytesRead);
+
+                ProcessPackets();
+            }
+            catch(Exception e)
+            {
+                print(" There was an issue" + e.ToString());
+            }
+        }
+    }
+
 
     async public void SendPacketToServer(Buffer packet)
     {
@@ -93,20 +117,22 @@ public class GameClient : MonoBehaviour
         await socket.GetStream().WriteAsync(packet.bytes, 0, packet.bytes.Length);
     }
 
-    public void SendPlayPacket(int x, int y)
+    public void SendPlayPacket(int x, int y, int type)
     {
-        //TODO send the spaces on the board so we can get their info and test to see if this mess is working
+        SendPacketToServer(PacketBuilder.Play(x, y, type));
     }
 
 
     void ProcessPackets()
     {
+        print(buffer);
         if (buffer.length < 4) return;
 
         string packetIdentifier = buffer.ReadString(0, 4);
         switch(packetIdentifier)
         {
             case "JOIN":
+                print("Getting packets");
                 if (buffer.length < 5) return;
                 byte joinResponse = buffer.ReadUInt8(4);
 
@@ -126,6 +152,7 @@ public class GameClient : MonoBehaviour
                 //have to figure out what this looks like still
 
                 break;
+           
         }//End of switch statement
     }
 

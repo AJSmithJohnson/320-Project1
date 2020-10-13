@@ -42,24 +42,25 @@ exports.Client = class Client {
 
 				//calls servers generate responseID needs desiredUsername and a reference to the client
 				let responseType = this.server.generateResponseID(desiredUsername, this);
-
+				console.log(responseType + "This is the responseType");
 				this.buffer = this.buffer.slice(5 + lengthOfUsername);
 
 				const packet = PacketBuilder.join(responseType);
+				console.log(packet);
 				this.sendPacket(packet);
-				const packet2 = PacketBuilder.update(this.server.game);
+				//const packet2 = PacketBuilder.update(this.server.game);
 				console.log("User wants to change name: " +desiredUsername+"");
 			break;
 			case "CHAT":
 
 			break;
 			case "PLAY":
-				if(this.buffer.length < 6) return;
-				const x = this.buffer.readUInt8(4);
-				const y = this.buffer.readUInt8(5);
-
-				this.buffer.slice(6);
-				this.server.game.PlayMove(this,x,y);
+				if(this.buffer.length < 7) return;
+				const xPos = this.buffer.readUInt8(4);
+				const yPos = this.buffer.readUInt8(5);
+				const type = this.buffer.readUInt8(6);
+				this.buffer.slice(7);
+				this.server.game.PlayMove(this,xPos,yPos, type);
 
 			break;
 			default:
@@ -71,6 +72,7 @@ exports.Client = class Client {
 		}//End of switch
 	}//End of onData method
 	sendPacket(packet){
+		console.log("HERE");
 		this.socket.write(packet);
 	}
 }//End of client class
