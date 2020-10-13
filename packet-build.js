@@ -22,22 +22,16 @@ exports.PacketBuilder = {
 
 	},
 
-	update(game){
-		const packet = Buffer.alloc(15);
+	update(game, x, y, type){
+		console.log("Writing update packet");
+		const packet = Buffer.alloc(9);
 		packet.write("UPDT", 0);
 		packet.writeUInt8(game.whoseTurn, 4);
 		packet.writeUInt8(game.whoHasWon, 5);
 
-		var offset = 6;
-		for(var x = 0; x < 36; x++)
-		{
-			for(var y = 0; y < 36; y++)
-			{
-				//packet.writeUInt8();//game board stuff here
-				offset++;
-			}
-
-		}
+		packet.writeUInt8(x, 6);
+		packet.writeUInt8(y, 7);
+		packet.writeUInt8(type, 8);
 
 		return packet;
 	}

@@ -12,10 +12,18 @@ const Game = {
 
 	clientA:null,
 	clientB:null,
-	PlayMove(clint, x, y, type){
-		this.board[x][y] = type;
+	PlayMove(client, x, y, type){
+		//console.log(x);
+		//console.log(y);
+		this.board[y][x] = type;
 		console.log(this.board);
-		
+		this.checkStateAndUpdate(x, y, type);
+	},
+	checkStateAndUpdate(x, y, type){
+		//Look for game over
+		//TODO send update packet to everyone
+		const packet = PacketBuilder.update(this, x, y, type);
+		Server.broadcastPacket(packet);
 	},
 };
 

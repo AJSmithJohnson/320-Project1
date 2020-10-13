@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameClient : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class GameClient : MonoBehaviour
     public Transform panelHostDetails;
     public Transform panelUsername;
     public Transform panelGameplay;
+    public Button[] gameBttn = new Button [9];
     // Start is called before the first frame update
     void Start()
     {
@@ -110,7 +112,21 @@ public class GameClient : MonoBehaviour
         }
     }
 
-
+    public void UpdateButtens(int xRef, int yRef, int type)
+    {
+        print("getting to updateButtens");
+        foreach(Button b in gameBttn)
+        {
+            if(b.GetComponent<GameplayController>().xPos == xRef)
+            {
+                if(b.GetComponent<GameplayController>().yPos == yRef)
+                {
+                    print("is the problem the text portion");
+                    b.GetComponentInChildren<Text>().text = "YAYYYY";
+                }// end of if
+            }//end of if
+        }
+    }//End of updateButtens Method
     async public void SendPacketToServer(Buffer packet)
     {
         if (!socket.Connected) return;
@@ -119,6 +135,8 @@ public class GameClient : MonoBehaviour
 
     public void SendPlayPacket(int x, int y, int type)
     {
+        print(x);
+        print(y);
         SendPacketToServer(PacketBuilder.Play(x, y, type));
     }
 
@@ -149,8 +167,19 @@ public class GameClient : MonoBehaviour
                 buffer.Consume(5);
                 break;
             case "UPDT":
-                //have to figure out what this looks like still
-
+                print("WE has an update packet");
+                if(buffer.length < 9)
+                {
+                    print("TOo small for update packet");
+                    return;
+                }
+                //DO something based on whoseTurn it is
+                //IF game has won either go to lobby or quit everything
+                int xVal = buffer.ReadUInt8(6);
+                int yVal = buffer.ReadUInt8(7);
+                int type = buffer.ReadUInt8(8);
+                UpdateButtens(xVal, yVal, type);
+                buffer.Consume(9);
                 break;
            
         }//End of switch statement

@@ -35,11 +35,13 @@ public static class PacketBuilder
     public static Buffer Play(int x, int y, int type)
     {
 
-        Buffer packet = Buffer.Alloc(7);
+        Buffer packet = Buffer.Alloc(9);
         packet.WriteString("PLAY");
         packet.WriteUInt8((byte)x, 4);
-        packet.WriteUInt8((byte)y, 5);
-        packet.WriteUInt8((byte)type, 6);
+        packet.WriteUInt8( 0, 5);
+        packet.WriteUInt8((byte)y, 6);
+        packet.WriteUInt8(0, 7);
+        packet.WriteUInt8((byte)type, 8);
 
         return packet;
     }

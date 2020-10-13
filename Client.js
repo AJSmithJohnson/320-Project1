@@ -9,6 +9,9 @@ exports.Client = class Client {
 		this.socket.on('error', (e)=>{this.onError(e)});
 		this.socket.on('close', ()=>{this.onClose()});
 		this.socket.on('data', (d)=>{this.onData(d)});
+		this.xPos = 0;
+		this.yPos = 0;
+		this.type = 0;
 	}
 
 	onError(errMsg){
@@ -56,12 +59,13 @@ exports.Client = class Client {
 			break;
 			case "PLAY":
 				if(this.buffer.length < 7) return;
-				const xPos = this.buffer.readUInt8(4);
-				const yPos = this.buffer.readUInt8(5);
-				const type = this.buffer.readUInt8(6);
-				this.buffer.slice(7);
-				this.server.game.PlayMove(this,xPos,yPos, type);
-
+				this.xPos = this.buffer.readUInt8(4);
+				this.yPos = this.buffer.readUInt8(6);
+				this.type = this.buffer.readUInt8(8);
+				console.log(this.xPos + "This is the xposition");
+				console.log(this.yPos + "This is the yposition");
+				this.server.game.PlayMove(this,this.xPos,this.yPos, this.type);
+				this.buffer = Buffer.alloc(0);
 			break;
 			default:
 				console.log("ERROR: packet identifier not recognize" + packetIdentifier );
