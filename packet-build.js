@@ -34,7 +34,21 @@ exports.PacketBuilder = {
 		packet.writeUInt8(type, 8);
 
 		return packet;
-	}
+	},
+	scoreAndUpdate(game, x, y, type, scoreX, scoreY){
+		console.log("Getting a scoreAndUpdate packet");
+		const packet = Buffer.alloc(11);
+		packet.write("SCORE", 0);
+		packet.writeUInt8(game.whoseTurn, 4);
+		packet.writeUInt8(game.whoHasWon, 5);
+		packet.writeUInt8(x, 6);
+		packet.writeUInt8(y, 7);
+		packet.writeUInt8(type, 8);
+		packet.writeUInt8(scoreX, 9);
+		packet.writeUInt8(scoreY, 10);
+
+		return packet;
+	},
 
 	
 	

@@ -76,7 +76,7 @@ exports.Client = class Client {
 		}//End of switch
 	}//End of onData method
 	sendPacket(packet){
-		console.log("HERE");
+		//console.log("HERE");
 		this.socket.write(packet);
 	}
 }//End of client class

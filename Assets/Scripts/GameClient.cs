@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class GameClient : MonoBehaviour
 {
 
+    public Text instructionText;
+    private Text _instructionText;
     static public GameClient singleton;
     TcpClient socket = new TcpClient();
     Buffer buffer = Buffer.Alloc(0);
@@ -20,9 +22,13 @@ public class GameClient : MonoBehaviour
     public Transform panelUsername;
     public Transform panelGameplay;
     public Button[] gameBttn = new Button [9];
+
+
+
     // Start is called before the first frame update
     void Start()
     {
+        _instructionText = instructionText;
         if (singleton)
         {
             Destroy(gameObject);
@@ -114,6 +120,10 @@ public class GameClient : MonoBehaviour
 
     public void UpdateButtens(int xRef, int yRef, int type)
     {
+        if(type == 5)
+        {
+            instructionText.text = "Please select a line space with a '+' symbol on it";
+        }
         print("getting to updateButtens");
         foreach(Button b in gameBttn)
         {
@@ -121,8 +131,20 @@ public class GameClient : MonoBehaviour
             {
                 if(b.GetComponent<GameplayController>().yPos == yRef)
                 {
-                    print("is the problem the text portion");
-                    b.GetComponentInChildren<Text>().text = "YAYYYY";
+                    //print("is the problem the text portion");
+                    if(type == 1)
+                    {
+                        b.GetComponentInChildren<Text>().text = "-";
+                    }
+                    else if(type == 2){
+                        b.GetComponentInChildren<Text>().text = "|";
+                    }else if(type == 3)
+                    {
+                        //TODO have first two letters of users username get placed into the box
+                        //TODO would need to rework IP update protocol
+                        b.GetComponentInChildren<Text>().text = "YAAAYYY";
+                    }
+                    
                 }// end of if
             }//end of if
         }
@@ -180,6 +202,17 @@ public class GameClient : MonoBehaviour
                 int type = buffer.ReadUInt8(8);
                 UpdateButtens(xVal, yVal, type);
                 buffer.Consume(9);
+                break;
+            case "SCORE":
+                int xValue = buffer.ReadUInt8(6);
+                int yValue= buffer.ReadUInt8(7);
+                int typeVal = buffer.ReadUInt8(8);
+                int scoreXVal = buffer.ReadUInt8(9);
+                int scoreYVal = buffer.ReadUInt8(10);
+                UpdateButtens(xValue, yValue, typeVal);
+                UpdateButtens(scoreXVal, scoreYVal, 3);
+                buffer.Consume(11);
+
                 break;
            
         }//End of switch statement
