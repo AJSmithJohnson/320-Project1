@@ -25,7 +25,7 @@ const Game = {
 	PlayMove(client, x, y, type){
 		//console.log(this.clientA);
 		console.log(this.clientA.username + " that is");
-		console.log(this.scoreSpotA && this.scoreSpotB && this.scoreSpotC && this.scoreSpotD)
+		console.log(this.totalScore + "This is the score");
 		//console.log(x);
 		//console.log("");
 		//console.log(y);
@@ -44,7 +44,7 @@ const Game = {
 		else if(type < 3 && type >0)
 		{
 			//this.moves += 1;
-			//this.board[y][x] = type;
+			this.board[y][x] = type;
 			//console.log(this.board);
 			if(this.scoreSpotA == 0 && this.checkFor1stSpotScore() == 1){
 				
@@ -77,8 +77,15 @@ const Game = {
 				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 3);
 				Server.broadcastPacket(packet);
 			} 
+			if(this.totalScore > 3)
+			{
+				this.endGame();
+			}else
+			{
+				this.checkStateAndUpdate(x,y, type);	
+			}
 			//update the board
-			this.checkStateAndUpdate(x,y, type);
+			
 			
 
 			
@@ -91,6 +98,7 @@ const Game = {
 	},
 	checkFor1stSpotScore()
 	{
+		console.log("here in the checkfor 1st spot spot");
 		this.checks = 0;
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
@@ -108,7 +116,7 @@ const Game = {
 		{
 			this.checks+=1;
 		}
-
+		console.log(this.checks + "THIS IS HOW MANY CHECKS THERE ARE");
 		if(this.checks == 4)
 		{
 			//console.log("FIRST SPOT SUCCESSFULL");
@@ -227,9 +235,10 @@ const Game = {
 		//Then we will start making real time games with UDP
 		//TAKE A LOOK AT QUIZ again
 		console.log("Sending end game packet");
-		const packet = PacketBuilder.gameWon(this, clientAScore, clientBScore, this.whoHasWon, clientA, clientB);
+		//const packet = PacketBuilder.gameWon(this, this.clientAScore, this.clientBScore, this.whoHasWon, this.clientA, this.clientB);
+		const packet = PacketBuilder.gameWon(this, this.clientAScore, this.clientB, this.whoHasWon, this.clientA);
 		Server.broadcastPacket(packet);
-	}
+	},
 };
 
 Server.start(Game);
