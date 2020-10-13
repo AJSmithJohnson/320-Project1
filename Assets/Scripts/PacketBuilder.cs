@@ -34,7 +34,7 @@ public static class PacketBuilder
 
     public static Buffer Play(int x, int y, int type)
     {
-
+        
         Buffer packet = Buffer.Alloc(9);
         packet.WriteString("PLAY");
         packet.WriteUInt8((byte)x, 4);

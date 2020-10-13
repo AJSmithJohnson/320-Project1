@@ -75,21 +75,27 @@ exports.Server = {
         		if(regex2.test(desiredUsername)) return 8;
 
         		if(this.game.clientA == client) {
+        			
 					this.game.clientA = client;
 					return 1;//you are already client X
 
         		}
         		if(this.game.clientB == client) {
+
 					this.game.clientB = client;
 					return 2;//you are already client O
 				}
         		if(!this.game.clientA) {
-        			console.log("NO client A");
+        			client.username = desiredUsername;
+        			//console.log("NO client A");
 					this.game.clientA = client;
+					
+					console.log("clinet A is here");
 					return 1;//you are new clientX
 
         		}
         		if(!this.game.clientB) {
+        			this.username = desiredUsername;
 					this.game.clientB = client;
 					return 2;//you are new clientX
 

@@ -214,6 +214,19 @@ public class GameClient : MonoBehaviour
                 buffer.Consume(11);
 
                 break;
+            case "GWON":
+                int winningUsernameLength = buffer.ReadUInt8(4);
+                int otherUsernameLength = buffer.ReadUInt8(5);
+                int clientAScore = buffer.ReadUInt8(6);
+                int clientBScore = buffer.ReadUInt8(7);
+                int winningClient = buffer.ReadUInt8(8);
+                string winnersUsername = buffer.ReadString(9);
+                string secondClientUsername = buffer.ReadString(10 + winnersUsername.Length);
+                print(winnersUsername);
+                print(clientAScore);
+
+                buffer.Consume(9 + winnersUsername.Length + secondClientUsername.Length);
+                break;
            
         }//End of switch statement
     }

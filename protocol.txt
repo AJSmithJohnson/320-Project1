@@ -75,6 +75,20 @@ Except for original sender(Maybe)
 	7   ? 	ascii 		sender's username
 	?   ?   ascii 		chat message
 
+ENDG - when the game is over
+
+	O  L 	Datatype 	Desc
+	--------------------------------------
+	0  4  	ascii 		packetType: "ENDG"
+	4  1    uint8 		length of winningplayers username
+	5  1    uint8 		length of otherplayers username
+	6  1    uint8 		playerA's Score
+	7  1    uint8       playerB's Score
+	8  1    uint8 		winner number 1: for player A 2: for player B
+	9  ?  	ascii 		playerA's userName
+	?  ?    ascii 		playerB's userName
+
+
 ================================================================================================
 
 Packets from Client
