@@ -5,6 +5,7 @@ const Game = {
 	whoseTurn: 1,
 	whoHasWon: 0,
 	moves: 0,
+	checks: 0,
 	board: [
 		[5, 0, 5, 0, 5],
 		[0, 3, 0, 3, 0],//spaces of importance y = 1, x = 1, and y = 3 x = 1
@@ -58,24 +59,24 @@ const Game = {
 	},
 	checkFor1stSpotScore()
 	{
-		var checks = 0;
+		this.checks = 0;
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[1][0] == 1){
-			checks+=1;
+		if(this.board[0][1] == 1){
+			this.checks+=1;
 		}
-		if(this.board[1][2] == 1){
-			checks+=1;
+		if(this.board[2][1] == 1){
+			this.checks+=1;
 		}
-		if(this.board[0][1] == 2){
-			checks+=1;
+		if(this.board[1][0] == 2){
+			this.checks+=1;
 		}
-		if(this.board[2][1] == 2)
+		if(this.board[1][2] == 2)
 		{
-			checks+=1;
+			this.checks+=1;
 		}
-		if(checks == 4)
+		if(this.checks == 4)
 		{
 			return 1;
 		}
@@ -87,27 +88,27 @@ const Game = {
 	},
 	checkForSecondSpotScore()
 	{
-		var checks = 0;
+		this.checks = 0;
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[1][2] == 1){
-			checks+=1;
+		if(this.board[2][1] == 1){
+			this.checks+=1;
 		}
-		if(this.board[1][4] == 1){
-			checks+=1;
+		if(this.board[4][1] == 1){
+			this.checks+=1;
 		}
-		if(this.board[0][3] == 2){
-			checks+=1;
+		if(this.board[3][0] == 2){
+			this.checks+=1;
 		}
-		if(this.board[2][3] == 2)
+		if(this.board[3][2] == 2)
 		{
-			checks+=1;
+			this.checks+=1;
 		}
 
-		console.log("CHecks equals " + checks);
+		console.log("CHecks equals " + this.checks);
 
-		if(checks == 4)
+		if(this.checks == 4)
 		{
 			return 1;
 		}
@@ -118,26 +119,26 @@ const Game = {
 	},
 	checkForThirdSpotScore()
 	{
-		var checks = 0;
+		this.checks = 0;
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[3][2] == 1){
-			checks+=1;
+		if(this.board[2][3] == 1){
+			this.checks+=1;
 		}
-		if(this.board[3][4] == 1){
-			checks+=1;
+		if(this.board[4][3] == 1){
+			this.checks+=1;
 		}
-		if(this.board[2][3] == 2){
-			checks+=1;
+		if(this.board[3][2] == 2){
+			this.checks+=1;
 		}
-		if(this.board[4][3] == 2)
+		if(this.board[3][4] == 2)
 		{
-			checks+=1;
+			this.checks+=1;
 		}
 
-		console.log("CHecks equals " + checks);
-		if(checks == 4)
+		console.log("CHecks equals " + this.checks);
+		if(this.checks == 4)
 		{
 			return 1;
 		}
@@ -148,26 +149,26 @@ const Game = {
 	},
 	checkForFourthSpotScore()
 	{
-		var checks = 0;
+		this.checks = 0;
 		//Find the closest space the player can score from
 		//Find the sorrounding spaces 
 		//Check all of the spaces sorrounding each thing
-		if(this.board[3][1 - 1] == 1){
-			checks+=1;
+		if(this.board[2][3] == 1){
+			this.checks+=1;
 		}
-		if(this.board[3][1+1] == 1){
-			checks+=1;
+		if(this.board[4][3] == 1){
+			this.checks+=1;
 		}
-		if(this.board[3-1][1] == 2){
-			checks+=1;
+		if(this.board[3][2] == 2){
+			this.checks+=1;
 		}
-		if(this.board[3+1][1] == 2)
+		if(this.board[3][4] == 2)
 		{
-			checks+=1;
+			this.checks+=1;
 		}
 
-		console.log("CHecks equals " + checks);
-		if(checks == 4)
+		console.log("CHecks equals " + this.checks);
+		if(this.checks == 4)
 		{
 			return 1;
 		}

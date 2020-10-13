@@ -31,7 +31,7 @@ exports.Client = class Client {
 			return;
 		}
 		const packetIdentifier = this.buffer.slice(0,4).toString();
-		console.log(packetIdentifier);
+		//console.log(packetIdentifier);
 
 		switch(packetIdentifier){
 			case "JOIN":
@@ -62,8 +62,8 @@ exports.Client = class Client {
 				this.xPos = this.buffer.readUInt8(4);
 				this.yPos = this.buffer.readUInt8(6);
 				this.type = this.buffer.readUInt8(8);
-				console.log(this.xPos + "This is the xposition");
-				console.log(this.yPos + "This is the yposition");
+				//console.log(this.xPos + "This is the xposition");
+				//console.log(this.yPos + "This is the yposition");
 				this.server.game.PlayMove(this,this.xPos,this.yPos, this.type);
 				this.buffer = Buffer.alloc(0);
 			break;
