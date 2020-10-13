@@ -1,0 +1,108 @@
+Line Game Protocol (LineGame) V1.0
+
+All MultiByte values stored using BIG ENDIAN
+==================================================
+
+game state that needs to be stored on the server?
+-state of board
+	A.what lines have been placed
+	B.what spaces have been claimed by which player
+-whose turn it is
+-if someone has control of a space or a portion of spaces
+-the players score
+
+Packets from the SERVER
+------------------------
+
+JOIN (Response) - when the server recieves a join packet, it must decide whether or not the client is allowed to join
+	
+	O 	L 	Datatype 	Desc
+	---------------------------------------------
+	0   4 	ascii 		packet type: "JOIN"
+	4 	1 	uint8 		join response: See below
+	5 	1 	uint8 		error id(see below)
+
+	join responses
+	---------------
+	(If player is accepted)
+	1: is player "A"
+	2: is player "B"
+	3: is spectator
+	(if player is denied)
+	4: username too short
+	5: username too long
+	6: username has invalid characters
+	7: username already taken
+	8: username not allowed(profane?)
+	9: game is full(NO MORE USERS allowed)
+
+
+UPDT - state of the game
+
+	O 	L 	Datatype 	Desc
+	---------------------------------------------
+	0   4 	ascii 		packet type: "UPDT"
+	4 	1 	uint8 		whose turn(1 / 2)
+	5 	1 	uint8 		who's won?(see below)
+	6	36  uint8 x36   the spots and who's claimed them
+
+	who's won
+	-----------------
+	0: we are playing the game currently
+	1: Player A has won
+	2: Player B has won
+	3: No one wins
+	4: game cancelled (a player backed out or something)
+
+	the spots
+	--------------
+	0: the spot should be blank
+	1: the spot should have a horizontal line
+	2: the spot should have a vertical line
+	3: the spot should have an A in it (player A has claimed the space)
+	4: the spot should have a  B in it (player B has claimed the space)
+	5: the spot should have a dot(spaces that are dots by default won't change)
+
+
+CHAT - when recieving a CHAT packet from a client, the server sends this chat packet out to all connected.
+Except for original sender(Maybe)
+
+	O 	L 	Datatype 	Desc
+	---------------------------------------------
+	0   4 	ascii 		packet type: "CHAT"
+	4 	1 	uint8 		length of sender's username
+	5   2   uint16      length of the chat message
+	7   ? 	ascii 		sender's username
+	?   ?   ascii 		chat message
+
+================================================================================================
+
+Packets from Client
+-----------------------------------------------------
+
+JOIN (Request) - After establishing a connection w/ the server, client will send a JOIN packet w/ a desired username. The
+server will send back a response.
+
+	O  	L  	Datatype 	Desc
+	----------------------------------------------------
+	0   4   asciii      packet type: "JOIN" 
+	4   1   uint8       how long the username is(255 max)
+	5   ?   ascii 		the desired username for this connected client
+
+
+CHAT  - The player wants to chat.
+
+	O  	L  	Datatype 	Desc
+	----------------------------------------------------
+	0 	4	ascii 		packet type: "CHAT"
+	4	2	uint8		length of the message
+	6   ?	ascii 		message for the chat (65535) max
+
+
+PLAY - This packet should be submitted when the player takes their turn.
+	
+	O  	L  	Datatype 	Desc
+	----------------------------------------------------
+	0   4  ascii 		packet type:  "PLAY"
+	4 	1  uint8 		X (column number)
+	5   1  uint8 		Y (Row number) 
