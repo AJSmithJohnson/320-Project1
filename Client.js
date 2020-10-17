@@ -48,13 +48,31 @@ exports.Client = class Client {
 				//console.log(responseType + "This is the responseType");
 				this.buffer = this.buffer.slice(5 + lengthOfUsername);
 
-				const packet = PacketBuilder.join(responseType);
+				let packet = PacketBuilder.join(responseType);
 				//console.log(packet);
 				this.sendPacket(packet);
 				//const packet2 = PacketBuilder.update(this.server.game);
 				console.log("User wants to change name: " +desiredUsername+"");
 			break;
 			case "CHAT":
+				if(this.buffer.length < 5){
+					console.log(data);
+					return;
+				}
+				//const lengthOfUsername = this.buffer.readUInt8(4);
+				
+				const lengthOfMessage = this.buffer.readUInt8(4);
+				//let senderName = this.buffer.slice(5, 5 + lengthOfUsername);
+				//let chatMessage = this.buffer.slice(5+lengthOfUsername, 5 + lengthOfUsername+lengthOfMessage);
+				let chatMessage = this.buffer.slice(5, 5+ lengthOfMessage).toString();
+				console.log(chatMessage);
+				//if(this.buffer.length < 5 + lengthOfUsername + lengthOfMessage) return;
+
+				//empty pbuffer
+				
+				var packet2 = PacketBuilder.chat(this.username, chatMessage);
+				this.server.broadcastPacket(packet2);
+				this.buffer = Buffer.alloc(0);
 
 			break;
 			case "PLAY":

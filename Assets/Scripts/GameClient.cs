@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +24,8 @@ public class GameClient : MonoBehaviour
     public Transform panelGameplay;
     public Button[] gameBttn = new Button [9];
 
-
+    public TMP_InputField chatField;
+    public TextMeshProUGUI displayText;
 
     // Start is called before the first frame update
     void Start()
@@ -118,6 +120,23 @@ public class GameClient : MonoBehaviour
         }
     }
 
+    public void ChatDoneWithInput()
+    {
+        if (new Regex(@"^\\list$", RegexOptions.IgnoreCase).IsMatch(chatField.text))
+        {
+            SendPacketToServer(PacketBuilder.Chat(chatField.text));
+            chatField.text = "";
+        }
+        else if (!new Regex(@"^(\s|\t)*$").IsMatch(chatField.text))
+        {
+            SendPacketToServer(PacketBuilder.Chat(chatField.text));
+            chatField.text = "";
+        }
+
+        chatField.Select();
+        chatField.ActivateInputField();
+    }
+
     public void UpdateButtens(int xRef, int yRef, int type)
     {
         if(type == 5)
@@ -162,6 +181,10 @@ public class GameClient : MonoBehaviour
         SendPacketToServer(PacketBuilder.Play(x, y, type));
     }
 
+    public void DisplayChatText(string text)
+    {
+        displayText.text += $"{text}\n";
+    }
 
     void ProcessPackets()
     {
@@ -171,6 +194,16 @@ public class GameClient : MonoBehaviour
         string packetIdentifier = buffer.ReadString(0, 4);
         switch(packetIdentifier)
         {
+            case "CHAT":
+                int senderNameLength = buffer.ReadUInt8(4);
+                int messageLength = buffer.ReadUInt8(5);
+                string userName = buffer.ReadString(6, senderNameLength);
+                string chatMessage = buffer.ReadString(6 + senderNameLength, messageLength);
+
+                DisplayChatText($"{userName} : {chatMessage}");
+
+                buffer.Consume(6 + senderNameLength + messageLength);
+                break;
             case "JOIN":
                 print("Getting packets");
                 if (buffer.length < 5) return;

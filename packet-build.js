@@ -18,8 +18,18 @@ exports.PacketBuilder = {
 
 		return packet;
 	},
-	chat(){
+	chat(senderName, chatMessage){
+		const packet = Buffer.alloc(6 + senderName.length + chatMessage.length);
+		console.log("Writing a chat message");
+		console.log(senderName);
+		console.log(chatMessage);
+		packet.write("CHAT", 0);
+		packet.writeUInt8(senderName.length, 4);
+		packet.writeUInt8(chatMessage.length, 5);
+		packet.write(senderName, 6);
+		packet.write(chatMessage, 6+senderName.length);
 
+		return packet;
 	},
 
 	update(game, x, y, type){
