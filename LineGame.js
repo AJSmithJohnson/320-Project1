@@ -32,6 +32,8 @@ const Game = {
 	readyPlayers : 0,
 	Start()
 	{
+		this.whoHasWon = 0;
+		console.log("Starting game");
 		this.totalScore = 0;
 		this.scoreSpotA = 0;
 		this.scoreSpotB = 0;
@@ -40,7 +42,17 @@ const Game = {
 		this.clientAScore = 0;
 		this.clientBScore = 0;
 		this.readyPlayers = 0;
-		this.board = this.defaultBoard.slice(0);
+		//var otherBoard = this.defaultBoard.slice(0);
+		//console.log("Old board looks like" + this.board);
+		//this.board = otherBoard;
+		this.board = [
+		[5, 0, 5, 0, 5],
+		[0, 3, 0, 3, 0],//spaces of importance y = 1, x = 1, and y = 3 x = 1
+		[5, 0, 5, 0, 5],
+		[0, 3, 0, 3, 0],//spaces of importance y = 1 x =3,   and y = 3 x = 3
+		[5, 0, 5, 0, 5],
+		];
+		console.log("New board looks like" + this.board);
 
 	},
 	PlayMove(client, x, y, type){

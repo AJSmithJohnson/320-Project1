@@ -296,7 +296,7 @@ public class GameClient : MonoBehaviour
                 print(winnersUsername);
                 print(clientAScore);
 
-                buffer.Consume(9 + winnersUsername.Length + secondClientUsername.Length);
+                buffer.Consume(10 + winnersUsername.Length + secondClientUsername.Length);
                 break;
            
         }//End of switch statement
