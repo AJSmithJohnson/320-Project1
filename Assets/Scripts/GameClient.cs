@@ -295,7 +295,7 @@ public class GameClient : MonoBehaviour
                 string secondClientUsername = buffer.ReadString(10 + winnersUsername.Length);
                 print(winnersUsername);
                 print(clientAScore);
-
+                AdjustPanels(4);
                 buffer.Consume(10 + winnersUsername.Length + secondClientUsername.Length);
                 break;
            
