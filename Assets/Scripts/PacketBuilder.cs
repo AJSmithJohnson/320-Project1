@@ -21,6 +21,15 @@ public static class PacketBuilder
         return packet;
     }
 
+    public static Buffer Ready(int ready)
+    {
+        int packetLength = 0;
+        Buffer packet = Buffer.Alloc(packetLength);
+
+        packet.WriteString("REDY");
+        packet.WriteUInt8((byte)ready, 4);
+        return packet;
+    }
 
     //get username or maybe not we might not even need the username here
     public static Buffer Chat(string message)

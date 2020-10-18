@@ -22,10 +22,18 @@ public class GameClient : MonoBehaviour
     public Transform panelHostDetails;
     public Transform panelUsername;
     public Transform panelGameplay;
+    public Transform panelLobby;
     public Button[] gameBttn = new Button [9];
 
     public TMP_InputField chatField;
     public TextMeshProUGUI displayText;
+
+    public Text playerAText;
+    public Text playerBText;
+    public Button readyUpButton;
+
+    private int readyOrNot = 0;
+
 
     // Start is called before the first frame update
     void Start()
@@ -84,17 +92,26 @@ public class GameClient : MonoBehaviour
         {
             panelHostDetails.gameObject.SetActive(true);
             panelUsername.gameObject.SetActive(false);
+            panelLobby.gameObject.SetActive(false);
             panelGameplay.gameObject.SetActive(false);
         }else if(order == 2)
         {
             panelHostDetails.gameObject.SetActive(false);
             panelUsername.gameObject.SetActive(true);
+            panelLobby.gameObject.SetActive(false);
             panelGameplay.gameObject.SetActive(false);
         }else if (order == 3)
         {
             panelHostDetails.gameObject.SetActive(false);
             panelUsername.gameObject.SetActive(false);
+            panelLobby.gameObject.SetActive(false);
             panelGameplay.gameObject.SetActive(true);
+        }else if(order == 4)
+        {
+            panelHostDetails.gameObject.SetActive(false);
+            panelUsername.gameObject.SetActive(false);
+            panelLobby.gameObject.SetActive(true);
+            panelGameplay.gameObject.SetActive(false);
         }
     }
 
@@ -119,7 +136,19 @@ public class GameClient : MonoBehaviour
             }
         }
     }
-
+    public void ReadyButtonHit()
+    {
+        if(readyOrNot == 0)
+        {
+            readyOrNot = 1;
+            SendPacketToServer(PacketBuilder.Ready(readyOrNot));
+        }
+        else if(readyOrNot == 1)
+        {
+            readyOrNot = 0;
+            SendPacketToServer(PacketBuilder.Ready(readyOrNot));
+        }
+    }
     public void ChatDoneWithInput()
     {
         if (new Regex(@"^\\list$", RegexOptions.IgnoreCase).IsMatch(chatField.text))
@@ -194,6 +223,10 @@ public class GameClient : MonoBehaviour
         string packetIdentifier = buffer.ReadString(0, 4);
         switch(packetIdentifier)
         {
+            case "START":
+                //we need the ability to switch from the lobby to the start of the game
+
+                break;
             case "CHAT":
                 int senderNameLength = buffer.ReadUInt8(4);
                 int messageLength = buffer.ReadUInt8(5);

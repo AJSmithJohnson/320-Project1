@@ -60,7 +60,7 @@ const Game = {
 				this.totalScore += 1;
 				this.clientAScore +=1;
 				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 1);
-				Server.broadcastPacket(packet);
+				Server.320(packet);
 			}
 			if(this.scoreSpotC == 0 && this.checkForThirdSpotScore() == 1)
 			{
