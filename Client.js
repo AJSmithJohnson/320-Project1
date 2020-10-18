@@ -34,6 +34,48 @@ exports.Client = class Client {
 		//console.log(packetIdentifier);
 
 		switch(packetIdentifier){
+			case "REDY":
+				if(this.buffer.length < 4)
+				{
+					console.log(data);
+					return;
+				}
+				console.log("HERE in  redy case");
+				let readyOrNotValue = this.buffer.readUInt8(4);
+
+				//is player one of our clients
+				if(this == this.server.game.clientA)
+				{
+					if(readyOrNotValue == 1){
+						console.log("Player A is ready")
+						this.server.game.readyPlayers += 1;	
+					}else {
+						console.log("Player A is not ready")
+						this.server.game.readyPlayers -= 1;	
+					}
+					
+				}else if(this == this.server.game.clientB)
+				{
+					if(readyOrNotValue == 1){
+						console.log("Player B is ready")
+						this.server.game.readyPlayers += 1;	
+					}else {
+						console.log("Player B is not ready")
+						this.server.game.readyPlayers -= 1;	
+					}
+				}//End of is Player player A or B check
+				console.log(this.server.game.readyPlayers);
+				if(this.server.game.readyPlayers >= 1)
+				{
+					console.log("HERE the game should start");
+					//RESET GAME SEND OUT START GAME
+					this.server.game.Start();
+					//SEND OUT START GAME PACKET
+					let packet = PacketBuilder.start();
+					this.server.broadcastPacket(packet);
+				}
+				this.buffer = Buffer.alloc(0);
+			break;
 			case "JOIN":
 				if(this.buffer.length <5){
 					console.log(data);

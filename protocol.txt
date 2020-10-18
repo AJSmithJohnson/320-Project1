@@ -88,6 +88,13 @@ ENDG - when the game is over
 	9  ?  	ascii 		playerA's userName
 	?  ?    ascii 		playerB's userName
 
+STRT - when the game is starting
+
+//we really just need to reset the gameboard
+	O  L  	Datatype 	Desc
+	-----------------------------------
+	0  4   	ascii  		packetType: "STRT" //we want to start the game
+	
 
 ================================================================================================
 

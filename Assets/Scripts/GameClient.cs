@@ -38,6 +38,7 @@ public class GameClient : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        readyOrNot = 0;
         _instructionText = instructionText;
         if (singleton)
         {
@@ -138,6 +139,7 @@ public class GameClient : MonoBehaviour
     }
     public void ReadyButtonHit()
     {
+        print("Hitting ready button");
         if(readyOrNot == 0)
         {
             readyOrNot = 1;
@@ -223,9 +225,11 @@ public class GameClient : MonoBehaviour
         string packetIdentifier = buffer.ReadString(0, 4);
         switch(packetIdentifier)
         {
-            case "START":
+            case "STRT":
+                AdjustPanels(3);
+                
                 //we need the ability to switch from the lobby to the start of the game
-
+                buffer.Consume(4);
                 break;
             case "CHAT":
                 int senderNameLength = buffer.ReadUInt8(4);
@@ -245,7 +249,7 @@ public class GameClient : MonoBehaviour
                 if(joinResponse == 1 || joinResponse == 2|| joinResponse == 3)
                 {
                     print(joinResponse);
-                    AdjustPanels(3);
+                    AdjustPanels(4);
                 }else
                 {
                     print(joinResponse);
@@ -281,6 +285,7 @@ public class GameClient : MonoBehaviour
 
                 break;
             case "GWON":
+                print("GETTING AN ENDGAME PACKET");
                 int winningUsernameLength = buffer.ReadUInt8(4);
                 int otherUsernameLength = buffer.ReadUInt8(5);
                 int clientAScore = buffer.ReadUInt8(6);

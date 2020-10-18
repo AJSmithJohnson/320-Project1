@@ -20,8 +20,29 @@ const Game = {
 		[0, 3, 0, 3, 0],//spaces of importance y = 1 x =3,   and y = 3 x = 3
 		[5, 0, 5, 0, 5],
 	],
+	defaultBoard: [
+		[5, 0, 5, 0, 5],
+		[0, 3, 0, 3, 0],//spaces of importance y = 1, x = 1, and y = 3 x = 1
+		[5, 0, 5, 0, 5],
+		[0, 3, 0, 3, 0],//spaces of importance y = 1 x =3,   and y = 3 x = 3
+		[5, 0, 5, 0, 5],
+	],
 	clientA: 0,
 	clientB: 0,
+	readyPlayers : 0,
+	Start()
+	{
+		this.totalScore = 0;
+		this.scoreSpotA = 0;
+		this.scoreSpotB = 0;
+		this.scoreSpotC = 0;
+		this.scoreSpotD = 0;
+		this.clientAScore = 0;
+		this.clientBScore = 0;
+		this.readyPlayers = 0;
+		this.board = this.defaultBoard.slice(0);
+
+	},
 	PlayMove(client, x, y, type){
 		//console.log(this.clientA);
 		console.log(this.clientA.username + " that is");
@@ -60,7 +81,7 @@ const Game = {
 				this.totalScore += 1;
 				this.clientAScore +=1;
 				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 1);
-				Server.320(packet);
+				Server.broadcastPacket(packet);
 			}
 			if(this.scoreSpotC == 0 && this.checkForThirdSpotScore() == 1)
 			{

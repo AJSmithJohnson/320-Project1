@@ -23,7 +23,7 @@ public static class PacketBuilder
 
     public static Buffer Ready(int ready)
     {
-        int packetLength = 0;
+        int packetLength = 5;
         Buffer packet = Buffer.Alloc(packetLength);
 
         packet.WriteString("REDY");

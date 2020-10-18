@@ -11,6 +11,15 @@
 
 exports.PacketBuilder = {
 
+    start(){
+    	//Alocate the packet here
+    	const packet = Buffer.alloc(4);
+    	packet.write("STRT", 0);
+    	
+    	console.log("BUilding a start packet");
+
+    	return packet;
+    },
 	join(responseID){
 		const packet = Buffer.alloc(5);
 		packet.write("JOIN", 0);
