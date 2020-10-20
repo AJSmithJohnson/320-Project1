@@ -95,10 +95,10 @@ exports.Server = {
 
         		}
         		if(!this.game.clientB) {
-        			this.username = desiredUsername;
+        			client.username = desiredUsername;
 					this.game.clientB = client;
 					return 2;//you are new clientX
-
+					
         		}
 
         		return 3;

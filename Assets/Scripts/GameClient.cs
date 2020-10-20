@@ -82,7 +82,7 @@ public class GameClient : MonoBehaviour
         }
         catch(Exception e)
         {
-            print("Failed to connect" + e.ToString());
+            //print("Failed to connect" + e.ToString());
             AdjustPanels(1);
         }
     }
@@ -112,6 +112,8 @@ public class GameClient : MonoBehaviour
             panelGameplay.gameObject.SetActive(true);
         }else if(order == 4)
         {
+            readyOrNot = 0;
+            SendPacketToServer(PacketBuilder.Request());
             panelHostDetails.gameObject.SetActive(false);
             panelUsername.gameObject.SetActive(false);
             panelLobby.gameObject.SetActive(true);
@@ -142,7 +144,7 @@ public class GameClient : MonoBehaviour
     }
     public void ReadyButtonHit()
     {
-        print("Hitting ready button");
+        //print("Hitting ready button");
         if(readyOrNot == 0)
         {
             readyOrNot = 1;
@@ -177,7 +179,7 @@ public class GameClient : MonoBehaviour
         {
             instructionText.text = "Please select a line space with a '+' symbol on it";
         }
-        print("getting to updateButtens");
+        //print("getting to updateButtens");
         foreach(Button b in gameBttn)
         {
             if(b.GetComponent<GameplayController>().xPos == xRef)
@@ -210,14 +212,14 @@ public class GameClient : MonoBehaviour
 
     public void SendPlayPacket(int x, int y, int type)
     {
-        print(x);
-        print(y);
+        //print(x);
+        //print(y);
         SendPacketToServer(PacketBuilder.Play(x, y, type));
     }
 
     public void DisplayChatText(string text, int whichText)
     {
-        print(whichText);
+       // print(whichText);
         if(whichText == 1)
         {
             lobbyText.text += $"{text} connected to the lobby \n";
@@ -243,7 +245,7 @@ public class GameClient : MonoBehaviour
 
     void ProcessPackets()
     {
-        print(buffer);
+        //print(buffer);
         if (buffer.length < 4) return;
 
         string packetIdentifier = buffer.ReadString(0, 4);
@@ -266,28 +268,28 @@ public class GameClient : MonoBehaviour
                 buffer.Consume(6 + senderNameLength + messageLength);
                 break;
             case "JOIN":
-                print("Getting packets");
+                //print("Getting packets");
                 if (buffer.length < 5) return;
                 byte joinResponse = buffer.ReadUInt8(4);
 
                 if(joinResponse == 1 || joinResponse == 2|| joinResponse == 3)
                 {
-                    print(joinResponse);
+                    //print(joinResponse);
                     AdjustPanels(4);
-                    SendPacketToServer(PacketBuilder.Request());
+                    
                 }else
                 {
-                    print(joinResponse);
+                   // print(joinResponse);
                     AdjustPanels(2);
                 }
 
                 buffer.Consume(5);
                 break;
             case "UPDT":
-                print("WE has an update packet");
+                //print("WE has an update packet");
                 if(buffer.length < 9)
                 {
-                    print("TOo small for update packet");
+                   // print("TOo small for update packet");
                     return;
                 }
                 //DO something based on whoseTurn it is
@@ -305,6 +307,7 @@ public class GameClient : MonoBehaviour
                 int scoreXVal = buffer.ReadUInt8(9);
                 int scoreYVal = buffer.ReadUInt8(10);
                 string winnerName = buffer.ReadString(11, 2);
+                
                 UpdateButtens(xValue, yValue, typeVal, " ");
                 UpdateButtens(scoreXVal, scoreYVal, 3, winnerName);
                 buffer.Consume(13);
@@ -313,7 +316,7 @@ public class GameClient : MonoBehaviour
             case "LOBY":
                 int nameLength = buffer.ReadUInt8(4);
                 int isClient = buffer.ReadUInt8(5);
-                string nameToLobby = buffer.ReadString(6, 6 + nameLength);
+                string nameToLobby = buffer.ReadString(6, nameLength);
 
                 buffer.Consume(6 + nameLength);
                 if(isClient == 1)
@@ -333,7 +336,7 @@ public class GameClient : MonoBehaviour
                 }
                 break;
             case "GWON":
-                print("GETTING AN ENDGAME PACKET");
+                //print("GETTING AN ENDGAME PACKET");
                 int winningUsernameLength = buffer.ReadUInt8(4);
                 //int otherUsernameLength = buffer.ReadUInt8(5);
                 int clientAScore = buffer.ReadUInt8(5);
@@ -342,7 +345,7 @@ public class GameClient : MonoBehaviour
                 string winnersUsername = buffer.ReadString(8, winningUsernameLength);
                 //string secondClientUsername = buffer.ReadString(10 + winnersUsername.Length);
                 print(winnersUsername);
-                print(clientAScore);
+                //print(clientAScore);
                 string displayText = "The winner was " + winnersUsername;
                 DisplayChatText(displayText, 5);
                 AdjustPanels(4);

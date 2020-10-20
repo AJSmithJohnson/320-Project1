@@ -59,7 +59,7 @@ const Game = {
 
 	},
 	PlayMove(client, x, y, type){
-		console.log("THE TURN NUMBER IS" + this.whoseTurn);
+		//console.log("THE TURN NUMBER IS" + this.whoseTurn);
 		//console.log(this.clientA);
 		//console.log(this.clientA.username + " that is");
 		//console.log(this.totalScore + "This is the score");
@@ -80,6 +80,7 @@ const Game = {
 		{
 			this.activeClientInit = this.clientB.username.substring(0, 2);
 		}
+
      	if(client == this.clientA && this.whoseTurn == 1)
      	{
      		

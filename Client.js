@@ -49,9 +49,9 @@ exports.Client = class Client {
 					if(readyOrNotValue == 1){
 						console.log("Player A is ready")
 						this.server.game.readyPlayers += 1;	
-					}else {
+					}else if(readyOrNotValue == 0 ) {
 						console.log("Player A is not ready")
-						this.server.game.readyPlayers -= 1;	
+						if(this.server.game.readyPlayers >0)this.server.game.readyPlayers -= 1;	
 					}
 					
 				}else if(this == this.server.game.clientB)
@@ -59,9 +59,9 @@ exports.Client = class Client {
 					if(readyOrNotValue == 1){
 						console.log("Player B is ready")
 						this.server.game.readyPlayers += 1;	
-					}else {
+					}else if(readyOrNotValue == 0) {
 						console.log("Player B is not ready")
-						this.server.game.readyPlayers -= 1;	
+						if(this.server.game.readyPlayers >0)this.server.game.readyPlayers -= 1;	
 					}
 				}//End of is Player player A or B check
 				console.log(this.server.game.readyPlayers);
