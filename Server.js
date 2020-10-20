@@ -30,7 +30,7 @@ exports.Server = {
 	{
 		if(this.game.clientA == client) this.game.clientA = null;
 		if(this.game.clientB == client) this.game.clientB = null;
-
+		this.game.readyPlayers -= 1;
 		const index =  this.clients.indexOf(client);
 		if(index >= 0) this.clients.splice(index, 1);
 	},

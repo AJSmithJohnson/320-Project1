@@ -11,6 +11,7 @@ const Game = {
 	scoreSpotC: 0,
 	scoreSpotD: 0,
 	clientAScore: 0,
+	activeClientInit : "",
 	clientBScore: 0,
 	totalScore: 0,
 	board: [
@@ -33,7 +34,8 @@ const Game = {
 	Start()
 	{
 		this.whoHasWon = 0;
-		console.log("Starting game");
+		this.whoseTurn = 1;
+		//console.log("Starting game");
 		this.totalScore = 0;
 		this.scoreSpotA = 0;
 		this.scoreSpotB = 0;
@@ -42,6 +44,7 @@ const Game = {
 		this.clientAScore = 0;
 		this.clientBScore = 0;
 		this.readyPlayers = 0;
+		this.activeClientInit = " ";
 		//var otherBoard = this.defaultBoard.slice(0);
 		//console.log("Old board looks like" + this.board);
 		//this.board = otherBoard;
@@ -52,13 +55,14 @@ const Game = {
 		[0, 3, 0, 3, 0],//spaces of importance y = 1 x =3,   and y = 3 x = 3
 		[5, 0, 5, 0, 5],
 		];
-		console.log("New board looks like" + this.board);
+		//console.log("New board looks like" + this.board);
 
 	},
 	PlayMove(client, x, y, type){
+		console.log("THE TURN NUMBER IS" + this.whoseTurn);
 		//console.log(this.clientA);
-		console.log(this.clientA.username + " that is");
-		console.log(this.totalScore + "This is the score");
+		//console.log(this.clientA.username + " that is");
+		//console.log(this.totalScore + "This is the score");
 		//console.log(x);
 		//console.log("");
 		//console.log(y);
@@ -67,7 +71,18 @@ const Game = {
 		console.log(this.board[1][3]);
 		console.log(this.board[3][3]);*/
 		
+		if(this.whoseTurn == 1)
+		{
+			this.activeClientInit = this.clientA.username.substring(0, 2);
 
+		}
+		else if(this.whoseTurn == 2)
+		{
+			this.activeClientInit = this.clientB.username.substring(0, 2);
+		}
+     	if(client == this.clientA && this.whoseTurn == 1)
+     	{
+     		
 
 		if(type == 5 || type == 3){
 			//TODO: send a packet that notifies the client that they need to 
@@ -83,7 +98,7 @@ const Game = {
 				
 				this.totalScore += 1;
 				this.clientAScore +=1;
-				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 1);
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 1, this.activeClientInit);
 				Server.broadcastPacket(packet);
 				this.scoreSpotA = 1;
 			}
@@ -92,7 +107,7 @@ const Game = {
 				this.scoreSpotB = 1;
 				this.totalScore += 1;
 				this.clientAScore +=1;
-				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 1);
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 1, this.activeClientInit);
 				Server.broadcastPacket(packet);
 			}
 			if(this.scoreSpotC == 0 && this.checkForThirdSpotScore() == 1)
@@ -100,16 +115,27 @@ const Game = {
 				this.scoreSpotC = 1;
 				this.totalScore += 1;
 				this.clientAScore +=1;
-				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 3);
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 3, this.activeClientInit);
 				Server.broadcastPacket(packet);
 			}
 			if(this.scoreSpotD == 0 && this.checkForFourthSpotScore() == 1){
 				this.scoreSpotD = 1;
 				this.totalScore += 1;
 				this.clientAScore +=1;
-				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 3);
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 3, this.activeClientInit);
 				Server.broadcastPacket(packet);
 			} 
+			if(this.whoseTurn == 1)
+			{
+				console.log("This.whose turn should be 2");
+				this.whoseTurn = 2;
+
+			}
+			else if(this.whoseTurn == 2)
+			{
+				console.log("This.whose turn should be 1");
+				this.whoseTurn = 1;
+			}
 			if(this.totalScore > 3)
 			{
 				this.endGame();
@@ -122,11 +148,74 @@ const Game = {
 			
 
 			
-		}else{
-			//TODO: Send an error message
-		}//We need to send an error message if the type isn't something we recognize
+			}
 	//end of total Score if
-	
+		} else if(client == this.clientB && this.whoseTurn == 2)
+		{
+			if(type == 5 || type == 3){
+			//TODO: send a packet that notifies the client that they need to 
+			//actually select a horizontal or vertical line space
+			//this.moves += 1;
+			}
+			else if(type < 3 && type >0)
+			{
+			//this.moves += 1;
+			this.board[y][x] = type;
+			//console.log(this.board);
+			if(this.scoreSpotA == 0 && this.checkFor1stSpotScore() == 1){
+				
+				this.totalScore += 1;
+				this.clientBScore +=1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 1, this.activeClientInit);
+				Server.broadcastPacket(packet);
+				this.scoreSpotA = 1;
+			}
+			if(this.scoreSpotB == 0 && this.checkForSecondSpotScore() == 1)
+			{
+				this.scoreSpotB = 1;
+				this.totalScore += 1;
+				this.clientBScore +=1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 1, this.activeClientInit);
+				Server.broadcastPacket(packet);
+			}
+			if(this.scoreSpotC == 0 && this.checkForThirdSpotScore() == 1)
+			{
+				this.scoreSpotC = 1;
+				this.totalScore += 1;
+				this.clientBScore +=1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 1, 3, this.activeClientInit);
+				Server.broadcastPacket(packet);
+			}
+			if(this.scoreSpotD == 0 && this.checkForFourthSpotScore() == 1){
+				this.scoreSpotD = 1;
+				this.totalScore += 1;
+				this.clientBScore +=1;
+				const packet = PacketBuilder.scoreAndUpdate(this, x, y, type, 3, 3, this.activeClientInit);
+				Server.broadcastPacket(packet);
+			} 
+			if(this.whoseTurn == 1)
+			{
+				console.log("This.whose turn should be 2");
+				this.whoseTurn = 2;
+
+			}
+			else if(this.whoseTurn == 2)
+			{
+				console.log("This.whose turn should be 1");
+				this.whoseTurn = 1;
+			}
+			if(this.totalScore > 3)
+			{
+				this.endGame();
+			}else
+			{
+				this.checkStateAndUpdate(x,y, type);	
+			}
+			//update the board
+			
+			
+			}
+		}
 		
 	},
 	checkFor1stSpotScore()
@@ -268,8 +357,18 @@ const Game = {
 		//Then we will start making real time games with UDP
 		//TAKE A LOOK AT QUIZ again
 		console.log("Sending end game packet");
+		var winningClient = " ";
 		//const packet = PacketBuilder.gameWon(this, this.clientAScore, this.clientBScore, this.whoHasWon, this.clientA, this.clientB);
-		const packet = PacketBuilder.gameWon(this, this.clientAScore, this.clientB, this.whoHasWon, this.clientA);
+		if(this.clientAScore > this.clientBScore)
+		{
+			this.whoHasWon = 1;
+			winningClient = this.clientA;
+		}else if(this.clientBScore > this.clientAScore)
+		{
+			this.whoHasWon = 2;
+			winningClient = this.clientB;
+		}
+		const packet = PacketBuilder.gameWon(this, this.clientAScore, this.clientBScore, this.whoHasWon, winningClient);
 		Server.broadcastPacket(packet);
 	},
 };

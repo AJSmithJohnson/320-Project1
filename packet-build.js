@@ -20,6 +20,16 @@ exports.PacketBuilder = {
 
     	return packet;
     },
+    lobby(username, isClient){
+    	const packet = Buffer.alloc(6 + username.length);
+    	packet.write("LOBY", 0);
+    	packet.writeUInt8(username.length, 4);
+    	packet.writeUInt8(isClient, 5);
+    	packet.write(username, 6);
+    	console.log("BUilding a start packet");
+
+    	return packet;
+    },
 	join(responseID){
 		const packet = Buffer.alloc(5);
 		packet.write("JOIN", 0);
@@ -54,9 +64,9 @@ exports.PacketBuilder = {
 
 		return packet;
 	},
-	scoreAndUpdate(game, x, y, type, scoreX, scoreY){
+	scoreAndUpdate(game, x, y, type, scoreX, scoreY, winnersInit){
 		console.log("Getting a scoreAndUpdate packet");
-		const packet = Buffer.alloc(11);
+		const packet = Buffer.alloc(13);
 		packet.write("SCOR", 0);
 		packet.writeUInt8(game.whoseTurn, 4);
 		packet.writeUInt8(game.whoHasWon, 5);
@@ -65,19 +75,19 @@ exports.PacketBuilder = {
 		packet.writeUInt8(type, 8);
 		packet.writeUInt8(scoreX, 9);
 		packet.writeUInt8(scoreY, 10);
-
+		packet.write(winnersInit, 11);
 		return packet;
 	},
-	gameWon(game, clientAScore, clientBScore, whoHasWon, winningClient, secondClient ){
+	gameWon(game, clientAScore, clientBScore, whoHasWon, winningClient){
 		//const packet = Buffer.alloc(9 + winningClient.username.length + secondClient.username.length)
 		const packet = Buffer.alloc(9 + winningClient.username.length);
 		packet.write("GWON", 0);
 		packet.writeUInt8(winningClient.username.length, 4);
 		//packet.writeUInt8(secondClient.username.length, 5);
-		packet.writeUInt8(clientAScore, 6);
-		packet.writeUInt8(clientBScore, 7);
-		packet.writeUInt8(whoHasWon, 8);
-		packet.write(winningClient.username, 9);
+		packet.writeUInt8(clientAScore, 5);
+		packet.writeUInt8(clientBScore, 6);
+		packet.writeUInt8(whoHasWon, 7);
+		packet.write(winningClient.username, 8);
 
 		return packet;
 		//packet.writeUInt8(secondClient.username, 10 + winningClient.username.length);

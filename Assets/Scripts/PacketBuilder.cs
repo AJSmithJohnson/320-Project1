@@ -57,4 +57,11 @@ public static class PacketBuilder
 
         return packet;
     }
+
+    public static Buffer Request()
+    {
+        Buffer packet = Buffer.Alloc(4);
+        packet.WriteString("RQST");
+        return packet;
+    }
 }

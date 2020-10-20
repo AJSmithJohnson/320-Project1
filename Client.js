@@ -65,7 +65,7 @@ exports.Client = class Client {
 					}
 				}//End of is Player player A or B check
 				console.log(this.server.game.readyPlayers);
-				if(this.server.game.readyPlayers >= 1)
+				if(this.server.game.readyPlayers >= 2)
 				{
 					console.log("HERE the game should start");
 					//RESET GAME SEND OUT START GAME
@@ -125,6 +125,23 @@ exports.Client = class Client {
 				//console.log(this.xPos + "This is the xposition");
 				//console.log(this.yPos + "This is the yposition");
 				this.server.game.PlayMove(this,this.xPos,this.yPos, this.type);
+				this.buffer = Buffer.alloc(0);
+			break;
+			
+			case "RQST":
+				if(this.buffer.length < 4) return;
+				if(this == this.server.game.clientA)
+				{
+					var lobbyPacket = PacketBuilder.lobby(this.username, 1);	
+				}else if(this == this.server.game.clientB)
+				{
+					var lobbyPacket = PacketBuilder.lobby(this.username, 2);	
+				}else
+				{
+					var lobbyPacket = PacketBuilder.lobby(this.username, 3);	
+				}
+				
+				this.server.broadcastPacket(lobbyPacket);
 				this.buffer = Buffer.alloc(0);
 			break;
 			default:

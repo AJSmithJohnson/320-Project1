@@ -13,6 +13,12 @@ game state that needs to be stored on the server?
 
 Packets from the SERVER
 ------------------------
+STRT (Response) - when we recieve a REDY packet if the number of readied up players is 2 or greater then we send out a STRT packet and this lets the client know it's time
+to switch to the game screen
+	O 	L 	Datatype 	Desc
+	---------------------------------------------
+	0   4 	ascii 		packet type: "STRT"
+
 
 JOIN (Response) - when the server recieves a join packet, it must decide whether or not the client is allowed to join
 	
@@ -44,16 +50,12 @@ UPDT - state of the game
 	0   4 	ascii 		packet type: "UPDT"
 	4 	1 	uint8 		whose turn(1 / 2)
 	5 	1 	uint8 		who's won?(see below)
-	6	36  uint8 x36   the spots and who's claimed them
+	6   1   uint8 		x coordinate of spot
+	7   1  	uint8 		y coordinate of spot
+	8 	1 	uint8 		the type of spot we are updating
+	
 
-	who's won
-	-----------------
-	0: we are playing the game currently
-	1: Player A has won
-	2: Player B has won
-	3: No one wins
-	4: game cancelled (a player backed out or something)
-
+	
 	the spots
 	--------------
 	0: the spot should be blank
@@ -71,30 +73,42 @@ Except for original sender(Maybe)
 	---------------------------------------------
 	0   4 	ascii 		packet type: "CHAT"
 	4 	1 	uint8 		length of sender's username
-	5   2   uint16      length of the chat message
-	7   ? 	ascii 		sender's username
+	5   1   uint8      length of the chat message
+	6   ? 	ascii 		sender's username
 	?   ?   ascii 		chat message
 
-ENDG - when the game is over
+SCOR - a score and update packet. When the player captures a winning piece this should be sent out instead of an update
+packet
 
-	O  L 	Datatype 	Desc
-	--------------------------------------
-	0  4  	ascii 		packetType: "ENDG"
-	4  1    uint8 		length of winningplayers username
-	5  1    uint8 		length of otherplayers username
-	6  1    uint8 		playerA's Score
-	7  1    uint8       playerB's Score
-	8  1    uint8 		winner number 1: for player A 2: for player B
-	9  ?  	ascii 		playerA's userName
-	?  ?    ascii 		playerB's userName
+	O 	L 	Datatype 	Desc
+	---------------------------------------------
+	0   4 	ascii 		packet type: "SCOR"
+	4 	1 	uint8 		whose turn it is
+	5   1   uint8       who has won
+	6   1 	uint8 		xCoordinate of the just played space
+	7   1   uint8 		yCoordinate of the just played space
+	8   1   uint8   	the type of the space
+	9 	1 	uint8 		the xCoordinate of the scored space
+	10  1  	uint8 		the yCoordinate of the scored space
+	11  2   ascii  		the first two letters of the scoring players username
 
-STRT - when the game is starting
+GWON - a packet signifying the game is over
+	O 	L 	Datatype 	Desc
+	---------------------------------------------
+	0   4 	ascii 	 	packet type: "GWON"
+	4 	1 	uint8 		winning client username length
+	5 	1 	uint8 		client A's score
+	6 	1 	uint8 		client B's score
+	7 	1   uint8 		who has won the player number we can probably cut this out at a later time
+	8 	? 	ascii 		winning clients username
 
-//we really just need to reset the gameboard
-	O  L  	Datatype 	Desc
-	-----------------------------------
-	0  4   	ascii  		packetType: "STRT" //we want to start the game
-	
+LOBY - a packet that is broadcast to everyconnected user once we connect to the lobby contains all the connected users 
+	O   L  Datatype  	Desc
+	----------------------------------------
+	0   4  ascii 		packet type: "LOBY"
+	4   1  uint8 		length of connected users name
+	5  	?  ascii 		clients name
+
 
 ================================================================================================
 
@@ -111,19 +125,37 @@ server will send back a response.
 	5   ?   ascii 		the desired username for this connected client
 
 
+REDY - After we are sent to the lobby we can ready up by hitting the ready up button. If they hit the ready button again they will unready up
+
+	O  	L  	Datatype 	Desc
+	----------------------------------------------------
+	0   4   asciii      packet type: "REDY" 
+	4   1   uint8       sends a value for if we are ready or not
+	
+
+
 CHAT  - The player wants to chat.
 
 	O  	L  	Datatype 	Desc
 	----------------------------------------------------
 	0 	4	ascii 		packet type: "CHAT"
-	4	2	uint8		length of the message
-	6   ?	ascii 		message for the chat (65535) max
+	4	1	uint8		length of the message
+	5   ?	ascii 		message for the chat (65535) max
 
 
 PLAY - This packet should be submitted when the player takes their turn.
 	
 	O  	L  	Datatype 	Desc
 	----------------------------------------------------
-	0   4  ascii 		packet type:  "PLAY"
-	4 	1  uint8 		X (column number)
-	5   1  uint8 		Y (Row number) 
+	0   4   ascii 		packet type:  "PLAY"
+	4 	1 	uint8 		the X position of the space the player wants to play
+	5   1   uint8 		nothing I was running into errors so this is just a blank space in the buffer
+	6 	1 	uint8 		the Y position of the space the player wants to play
+	7 	1 	uint8 		exists much the same as byte 5 I really just needed a blank space in the buffer for whatever reason
+	8 	1 	uint8 		the type of space we are sending to the buffer
+
+RQST - Sent once we connect to the lobby lets the server know that we want to update all the connected users
+
+	O  	L  	Datatype 	Desc
+	----------------------------------------------------
+	0   4   ascii 		packet type:  "RQST"

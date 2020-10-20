@@ -28,6 +28,9 @@ public class GameClient : MonoBehaviour
     public TMP_InputField chatField;
     public TextMeshProUGUI displayText;
 
+
+    public TextMeshProUGUI lobbyText;
+
     public Text playerAText;
     public Text playerBText;
     public Button readyUpButton;
@@ -168,7 +171,7 @@ public class GameClient : MonoBehaviour
         chatField.ActivateInputField();
     }
 
-    public void UpdateButtens(int xRef, int yRef, int type)
+    public void UpdateButtens(int xRef, int yRef, int type, string scoreText)
     {
         if(type == 5)
         {
@@ -192,7 +195,7 @@ public class GameClient : MonoBehaviour
                     {
                         //TODO have first two letters of users username get placed into the box
                         //TODO would need to rework IP update protocol
-                        b.GetComponentInChildren<Text>().text = "YAAAYYY";
+                        b.GetComponentInChildren<Text>().text = scoreText;
                     }
                     
                 }// end of if
@@ -212,9 +215,30 @@ public class GameClient : MonoBehaviour
         SendPacketToServer(PacketBuilder.Play(x, y, type));
     }
 
-    public void DisplayChatText(string text)
+    public void DisplayChatText(string text, int whichText)
     {
-        displayText.text += $"{text}\n";
+        print(whichText);
+        if(whichText == 1)
+        {
+            lobbyText.text += $"{text} connected to the lobby \n";
+        }
+        else if(whichText == 2)
+        {
+            lobbyText.text += $"{text} connected to the lobby \n";
+        }
+        else if (whichText == 3)
+        {
+            lobbyText.text += $"{text} connected to the lobby \n";
+        }
+        else if (whichText == 4)
+        {
+            
+            displayText.text += $"{text}\n";
+        }else if(whichText == 5)
+        {
+            lobbyText.text += $"{text} \n";
+        }
+
     }
 
     void ProcessPackets()
@@ -237,7 +261,7 @@ public class GameClient : MonoBehaviour
                 string userName = buffer.ReadString(6, senderNameLength);
                 string chatMessage = buffer.ReadString(6 + senderNameLength, messageLength);
 
-                DisplayChatText($"{userName} : {chatMessage}");
+                DisplayChatText($"{userName} : {chatMessage}", 2);
 
                 buffer.Consume(6 + senderNameLength + messageLength);
                 break;
@@ -250,6 +274,7 @@ public class GameClient : MonoBehaviour
                 {
                     print(joinResponse);
                     AdjustPanels(4);
+                    SendPacketToServer(PacketBuilder.Request());
                 }else
                 {
                     print(joinResponse);
@@ -270,7 +295,7 @@ public class GameClient : MonoBehaviour
                 int xVal = buffer.ReadUInt8(6);
                 int yVal = buffer.ReadUInt8(7);
                 int type = buffer.ReadUInt8(8);
-                UpdateButtens(xVal, yVal, type);
+                UpdateButtens(xVal, yVal, type, " ");
                 buffer.Consume(9);
                 break;
             case "SCOR":
@@ -279,24 +304,49 @@ public class GameClient : MonoBehaviour
                 int typeVal = buffer.ReadUInt8(8);
                 int scoreXVal = buffer.ReadUInt8(9);
                 int scoreYVal = buffer.ReadUInt8(10);
-                UpdateButtens(xValue, yValue, typeVal);
-                UpdateButtens(scoreXVal, scoreYVal, 3);
-                buffer.Consume(11);
+                string winnerName = buffer.ReadString(11, 2);
+                UpdateButtens(xValue, yValue, typeVal, " ");
+                UpdateButtens(scoreXVal, scoreYVal, 3, winnerName);
+                buffer.Consume(13);
 
+                break;
+            case "LOBY":
+                int nameLength = buffer.ReadUInt8(4);
+                int isClient = buffer.ReadUInt8(5);
+                string nameToLobby = buffer.ReadString(6, 6 + nameLength);
+
+                buffer.Consume(6 + nameLength);
+                if(isClient == 1)
+                {
+                    playerAText.text = "Player A is: " + nameToLobby;
+                    DisplayChatText($"{nameToLobby}", 1);
+                }
+                else if (isClient == 2)
+                {
+                    playerBText.text = "Player B is: " + nameToLobby;
+                    DisplayChatText($"{nameToLobby}", 2);
+
+                }
+                else if(isClient == 3)
+                {
+                    DisplayChatText($"{nameToLobby}", 3);
+                }
                 break;
             case "GWON":
                 print("GETTING AN ENDGAME PACKET");
                 int winningUsernameLength = buffer.ReadUInt8(4);
-                int otherUsernameLength = buffer.ReadUInt8(5);
-                int clientAScore = buffer.ReadUInt8(6);
-                int clientBScore = buffer.ReadUInt8(7);
-                int winningClient = buffer.ReadUInt8(8);
-                string winnersUsername = buffer.ReadString(9);
-                string secondClientUsername = buffer.ReadString(10 + winnersUsername.Length);
+                //int otherUsernameLength = buffer.ReadUInt8(5);
+                int clientAScore = buffer.ReadUInt8(5);
+                int clientBScore = buffer.ReadUInt8(6);
+                int winningClientNum = buffer.ReadUInt8(7);
+                string winnersUsername = buffer.ReadString(8, winningUsernameLength);
+                //string secondClientUsername = buffer.ReadString(10 + winnersUsername.Length);
                 print(winnersUsername);
                 print(clientAScore);
+                string displayText = "The winner was " + winnersUsername;
+                DisplayChatText(displayText, 5);
                 AdjustPanels(4);
-                buffer.Consume(10 + winnersUsername.Length + secondClientUsername.Length);
+                buffer.Consume(8 + winnersUsername.Length);
                 break;
            
         }//End of switch statement
